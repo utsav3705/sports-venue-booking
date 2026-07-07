@@ -23,41 +23,56 @@ const DATES = Array.from({ length: 7 }, (_, i) => {
  * - onClose (function): Close modal handler callback.
  */
 export default function BookingModal({ venue, onClose }) {
-  // Access global context action to dispatch new bookings
   const { addBooking } = useApp();
 
-  // Local React States to control flow, dates, slots, and text inputs
-  const [selectedDate, setSelectedDate] = useState(0); // Index of selected date in DATES array (0-6)
-  const [selectedSlots, setSelectedSlots] = useState([]); // List of selected hourly time slot strings
-  const [step, setStep] = useState("select"); // "select" | "confirm" | "success"
-  const [name, setName] = useState(""); // User's name text input
-  const [phone, setPhone] = useState(""); // User's phone text input
+  const [selectedDate, setSelectedDate] = useState(0); 
+  const [selectedSlots, setSelectedSlots] = useState([]); 
+  const [step, setStep] = useState("select"); 
+  const [name, setName] = useState(""); 
+  const [phone, setPhone] = useState(""); 
+  
+  // Track slots that are already booked for this venue on the chosen date
+  const [bookedSlots, setBookedSlots] = useState([]);
 
-  /**
-   * Helper function: Toggles selection of an hourly slot in state.
-   */
-  const toggleSlot = (slot) => {
-    // If the venue doesn't have this slot available today, ignore the click
-    if (!venue.availableSlots.includes(slot)) return;
-    
-    setSelectedSlots((prev) =>
-      prev.includes(slot)
-        ? prev.filter((s) => s !== slot) // Remove if already selected
-        : [...prev, slot] // Append if not yet selected
-    );
-  };
-
-  // Derived Values: Automatically recalculates when slot count changes
-  const totalHours = selectedSlots.length;
-  const totalAmount = totalHours * venue.pricePerHour;
-
-  // Formatter function to render dates nicely (e.g. "Sat, 5 Jul")
   const formatDate = (d) =>
     d.toLocaleDateString("en-IN", {
       weekday: "short",
       day: "numeric",
       month: "short",
     });
+
+  // Query existing bookings for this venue on selectedDate change
+  useEffect(() => {
+    if (!venue?._id) return;
+    const formattedDate = formatDate(DATES[selectedDate]);
+    
+    // Import axios instance directly or via service
+    import("@/services/authApi").then(({ default: api }) => {
+      api.get(`/bookings?venueId=${venue._id}`)
+        .then((res) => {
+          const matchedBookings = res.data.filter((b) => b.date === formattedDate);
+          const occupied = matchedBookings.flatMap((b) => b.slots);
+          setBookedSlots(occupied);
+          // Clear any selected slots that are now occupied
+          setSelectedSlots([]);
+        })
+        .catch((err) => console.error("Error loading booked slots:", err));
+    });
+  }, [selectedDate, venue?._id]);
+
+  const toggleSlot = (slot) => {
+    if (!venue.availableSlots.includes(slot) || bookedSlots.includes(slot)) return;
+    
+    setSelectedSlots((prev) =>
+      prev.includes(slot)
+        ? prev.filter((s) => s !== slot)
+        : [...prev, slot]
+    );
+  };
+
+  const totalHours = selectedSlots.length;
+  const totalAmount = totalHours * venue.pricePerHour;
+
 
   // --- STEP 3: SUCCESS VIEW RENDER ---
   if (step === "success") {
@@ -172,7 +187,7 @@ export default function BookingModal({ venue, onClose }) {
                 </p>
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                   {TIME_SLOTS.map((slot) => {
-                    const available = venue.availableSlots.includes(slot);
+                    const available = venue.availableSlots.includes(slot) && !bookedSlots.includes(slot);
                     const selected = selectedSlots.includes(slot);
                     return (
                       <button
@@ -317,6 +332,7 @@ export default function BookingModal({ venue, onClose }) {
                       date: formatDate(DATES[selectedDate]),
                       slots: selectedSlots,
                       amount: totalAmount,
+                      venueId: venue._id,
                     });
                     setStep("success"); // Shift to Step 3
                   }}

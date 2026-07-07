@@ -13,6 +13,7 @@ import {
   IndianRupee,
 } from "lucide-react";
 import ChatModal from "@/components/modals/ChatModal";
+import PrivateRoute from "@/components/pages/PrivateRoute";
 import { SPORTS, getSportColor } from "@/lib/data";
 import { useApp } from "@/lib/store";
 
@@ -80,153 +81,9 @@ export default function ProfilePage() {
   // --- RENDER LOGIN / SIGNUP VIEW IF GUEST ---
   if (!currentUser) {
     return (
-      <main className="max-w-md mx-auto px-4 py-16">
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-xl">
-          <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-primary" />
-            </div>
-            <h1 className="text-xl font-extrabold text-foreground">
-              {isLogin ? "Welcome back to PlayMates" : "Join PlayMates Ahmedabad"}
-            </h1>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              {isLogin
-                ? "Enter your credentials to access your profile"
-                : "Create an account to book courts and connect with players"}
-            </p>
-          </div>
-
-          {/* Feedback alerts */}
-          {authError && (
-            <div className="mb-4 text-xs font-semibold p-3 rounded-xl bg-red-50 text-red-600 border border-red-200">
-              {authError}
-            </div>
-          )}
-          {authSuccess && (
-            <div className="mb-4 text-xs font-semibold p-3 rounded-xl bg-green-50 text-green-600 border border-green-200">
-              {authSuccess}
-            </div>
-          )}
-
-          <form onSubmit={handleAuthSubmit} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
-                Username *
-              </label>
-              <input
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. dev_patel"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-input bg-background text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-semibold"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
-                Password *
-              </label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-input bg-background text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-semibold"
-              />
-            </div>
-
-            {/* Extra signup fields */}
-            {!isLogin && (
-              <>
-                <div>
-                  <label className="block text-[11px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Dev Patel"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-input bg-background text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-semibold"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="dev@example.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-input bg-background text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="98765 43210"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-input bg-background text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-semibold"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
-                    Preferred Sport *
-                  </label>
-                  <select
-                    value={sport}
-                    onChange={(e) => setSport(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-input bg-background text-sm text-foreground outline-none focus:border-primary transition-all font-semibold cursor-pointer"
-                  >
-                    {SPORTS.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-colors shadow-sm shadow-primary/10 mt-2"
-            >
-              {isLogin ? "Sign In" : "Create Account"}
-            </button>
-          </form>
-
-          {/* Toggle login/signup mode */}
-          <div className="text-center mt-6 pt-4 border-t border-border">
-            <button
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setAuthError("");
-                setAuthSuccess("");
-              }}
-              className="text-xs text-primary font-bold hover:underline"
-            >
-              {isLogin
-                ? "Don't have an account? Sign Up"
-                : "Already have an account? Sign In"}
-            </button>
-          </div>
-        </div>
-      </main>
+      <PrivateRoute>
+        <div />
+      </PrivateRoute>
     );
   }
 

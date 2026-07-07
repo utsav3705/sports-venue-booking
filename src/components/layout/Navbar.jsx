@@ -27,8 +27,11 @@ export default function Navbar({ activeTab, onTabChange }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [...NAV_LINKS];
-  if (currentUser?.username === "admin") {
+  if (currentUser?.username === "admin" || currentUser?.role === "admin") {
     links.push({ id: "admin", label: "Admin Panel" });
+  }
+  if (currentUser?.role === "venue_owner" || currentUser?.role === "admin") {
+    links.push({ id: "owner-dashboard", label: "Owner Console" });
   }
 
   return (

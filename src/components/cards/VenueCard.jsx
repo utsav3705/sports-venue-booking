@@ -80,7 +80,7 @@ export default function VenueCard({ venue, onBook }) {
 
         {/* Key Amenities Badge Pills (Displays up to 3 badges) */}
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {venue.amenities.slice(0, 3).map((amenity) => (
+          {(venue.amenities || []).slice(0, 3).map((amenity) => (
             <span
               key={amenity}
               className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border"
@@ -89,9 +89,9 @@ export default function VenueCard({ venue, onBook }) {
             </span>
           ))}
           {/* Over-count indicator pill (e.g. +2) */}
-          {venue.amenities.length > 3 && (
+          {(venue.amenities || []).length > 3 && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
-              +{venue.amenities.length - 3}
+              +{(venue.amenities || []).length - 3}
             </span>
           )}
         </div>
@@ -101,7 +101,7 @@ export default function VenueCard({ venue, onBook }) {
           <div className="flex items-center gap-1.5">
             <Wifi className="w-3 h-3 text-primary" />
             <span className="text-xs text-primary font-medium">
-              {venue.availableSlots.length} slots available today
+              {(venue.availableSlots || []).length} slots available today
             </span>
           </div>
         </div>
