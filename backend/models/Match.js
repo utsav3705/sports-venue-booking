@@ -1,14 +1,48 @@
 const mongoose = require("mongoose");
 
 const MatchSchema = new mongoose.Schema({
-  fromTeam: { type: String, required: true },
-  toTeam: { type: String, required: true },
-  toAvatar: { type: String },
-  sport: { type: String, required: true },
-  matchType: { type: String, enum: ["friendly", "competitive"], default: "friendly" },
-  stake: { type: Number, default: 0 },
-  status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" },
-  username: { type: String, required: true }
+  sport: {
+    type: String,
+    required: true,
+  },
+  venue: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Venue",
+    required: true,
+  },
+  date: {
+    type: String,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+  skillLevel: {
+    type: String,
+    required: true,
+  },
+  requiredPlayers: {
+    type: Number,
+    required: true,
+  },
+  joinedPlayers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+  description: {
+    type: String,
+    default: "",
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Match", MatchSchema);

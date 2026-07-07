@@ -37,6 +37,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  bio: {
+    type: String,
+    default: "Excited to play!",
+  },
+  favoriteSports: {
+    type: [String],
+    default: ["football"],
+  },
+  connections: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

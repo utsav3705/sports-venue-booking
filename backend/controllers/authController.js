@@ -126,7 +126,8 @@ const authUser = async (req, res) => {
 // @access  Private
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id)
+      .populate("connections", "name email phone profileImage sport");
 
     if (user) {
       return res.json({
@@ -137,6 +138,9 @@ const getUserProfile = async (req, res) => {
         role: user.role,
         sport: user.sport,
         profileImage: user.profileImage,
+        bio: user.bio,
+        favoriteSports: user.favoriteSports,
+        connections: user.connections,
       });
     } else {
       return res.status(404).json({ error: "User not found" });
@@ -159,6 +163,8 @@ const updateUserProfile = async (req, res) => {
       user.phone = req.body.phone || user.phone;
       user.sport = req.body.sport || user.sport;
       user.profileImage = req.body.profileImage || user.profileImage;
+      user.bio = req.body.bio !== undefined ? req.body.bio : user.bio;
+      user.favoriteSports = req.body.favoriteSports || user.favoriteSports;
 
       if (req.body.password) {
         if (req.body.password.length < 6) {
@@ -168,16 +174,21 @@ const updateUserProfile = async (req, res) => {
       }
 
       const updatedUser = await user.save();
+      const populatedUser = await User.findById(updatedUser._id)
+        .populate("connections", "name email phone profileImage sport");
 
       return res.json({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        phone: updatedUser.phone,
-        role: updatedUser.role,
-        sport: updatedUser.sport,
-        profileImage: updatedUser.profileImage,
-        token: generateToken(updatedUser._id),
+        _id: populatedUser._id,
+        name: populatedUser.name,
+        email: populatedUser.email,
+        phone: populatedUser.phone,
+        role: populatedUser.role,
+        sport: populatedUser.sport,
+        profileImage: populatedUser.profileImage,
+        bio: populatedUser.bio,
+        favoriteSports: populatedUser.favoriteSports,
+        connections: populatedUser.connections,
+        token: generateToken(populatedUser._id),
       });
     } else {
       return res.status(404).json({ error: "User not found" });

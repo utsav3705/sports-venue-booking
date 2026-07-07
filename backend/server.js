@@ -228,6 +228,7 @@ app.use("/api/connects", require("./routes/connectRoutes"));
 app.use("/api/joins", require("./routes/joinRoutes"));
 app.use("/api/matches", require("./routes/matchRoutes"));
 app.use("/api/threads", require("./routes/threadRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 // Catch-all route
 app.use((req, res) => {

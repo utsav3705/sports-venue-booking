@@ -647,6 +647,14 @@ export function getSportColor(sport) {
   return map[sport];
 }
 
+export const TIME_SLOTS = [
+  "05:00", "05:30", "06:00", "06:30", "07:00", "07:30",
+  "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
+  "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
+  "16:30", "17:00", "17:30", "18:00", "18:30", "19:00",
+  "19:30", "20:00", "20:30", "21:00", "21:30", "22:00",
+];
+
 // Direct messaging is only enabled for pickleball and padel players.
 export function canMessage(sport) {
   return sport === "pickleball" || sport === "padel";
